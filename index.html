@@ -2,568 +2,330 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sound Jump Game</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SOUND GAME</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background: #f4f1ea;
-    font-family: Arial, Helvetica, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #171717;
-  }
-  .app {
-    width: min(900px, 94vw);
-  }
-  .top {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    gap: 20px;
-    margin-bottom: 18px;
-  }
-  h1 { margin: 0; font-size: clamp(28px, 5vw, 48px); }
-  .hint { margin: 5px 0 0; color: #666; font-size: 14px; }
-  .controls {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-  button {
-    border: 1px solid #171717;
-    background: #fff;
-    padding: 11px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  button:hover { background: #171717; color: #fff; }
-  button.active { background: #171717; color: #fff; }
-  .game {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    max-height: 72vh;
-    background: #fff;
-    border: 2px solid #171717;
-    overflow: hidden;
-    border-radius: 12px;
-  }
-  .ground {
-    position: absolute;
-    left: 5%;
-    right: 5%;
-    bottom: 13%;
-    height: 2px;
-    background: #171717;
-  }
-  .box {
-    position: absolute;
-    width: clamp(44px, 8vw, 70px);
-    height: clamp(44px, 8vw, 70px);
-    left: 50%;
-    bottom: calc(13% + 2px);
-    transform: translate(-50%, 0);
-    background: #171717;
-    border-radius: 6px;
-    will-change: transform;
-  }
-  .meter {
-    position: absolute;
-    top: 18px;
-    left: 18px;
-    right: 18px;
-    height: 12px;
-    border: 1px solid #171717;
-    border-radius: 20px;
-    overflow: hidden;
-  }
-  .meterFill {
-    height: 100%;
-    width: 0%;
-    background: #171717;
-    transition: width .04s linear;
-  }
-  .readout {
-    position: absolute;
-    top: 43px;
-    left: 18px;
-    font-size: 12px;
-    color: #555;
-  }
-  .status {
-    margin-top: 14px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-  .card {
-    background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 8px;
-    padding: 12px;
-  }
-  .label { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: .08em; }
-  .value { font-size: 24px; font-weight: 800; margin-top: 3px; }
-  .log {
-    margin-top: 12px;
-    background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 8px;
-    padding: 12px;
-    max-height: 145px;
-    overflow: auto;
-    font-size: 13px;
-  }
-  .logRow {
-    display: grid;
-    grid-template-columns: 50px 1fr 1fr;
-    padding: 5px 0;
-    border-bottom: 1px solid #eee;
-  }
-  .permission {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #666;
-  }
-  @media (max-width: 600px) {
-    .top { align-items: flex-start; flex-direction: column; }
-    .controls { justify-content: flex-start; }
-    .status { grid-template-columns: 1fr 1fr 1fr; }
-    .value { font-size: 18px; }
-  }
-
-/* Sound control panel */
-.controls {
-  width: min(100%, 900px);
-  margin: 18px auto 0;
-  padding: 18px;
-  border: 1px solid rgba(0,0,0,.12);
-  border-radius: 16px;
-  background: rgba(255,255,255,.82);
-  box-sizing: border-box;
-}
-.control-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  margin-bottom:16px;
-}
-.control-title { font-weight:800; letter-spacing:.08em; }
-.control-subtitle { font-size:12px; opacity:.62; margin-top:4px; }
-.control-grid {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
-}
-.control {
-  display:block;
-  padding:13px;
-  border-radius:12px;
-  background:rgba(0,0,0,.045);
-}
-.control span {
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  font-size:12px;
-  margin-bottom:8px;
-}
-.control output { font-variant-numeric:tabular-nums; opacity:.7; }
-.control input { width:100%; accent-color:#111; }
-.control small { display:block; font-size:10px; line-height:1.4; opacity:.58; margin-top:5px; }
-.small-btn {
-  border:0;
-  background:#111;
-  color:#fff;
-  border-radius:9px;
-  padding:8px 12px;
-  font-size:11px;
-  cursor:pointer;
-}
-@media (max-width:650px) {
-  .control-grid { grid-template-columns:1fr; }
-}
-
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;color:#111;font-family:Arial,Helvetica,sans-serif;min-height:100vh;display:flex;justify-content:center}
+.app{width:min(1100px,100%);padding:24px}
+h1{margin:0;font-size:34px;letter-spacing:.08em}
+.sub{margin:5px 0 18px;color:#666;font-size:13px}
+.game-wrap{background:#fff;border:1px solid #ccc;border-radius:18px;padding:14px;box-shadow:0 10px 35px #00000012}
+#game{position:relative;width:100%;height:520px;overflow:hidden;background:#dcdcdc;border-radius:12px;border:2px solid #111}
+canvas{display:block;width:100%;height:100%}
+.hud{position:absolute;top:14px;left:14px;right:14px;display:flex;gap:10px;flex-wrap:wrap;pointer-events:none}
+.hudbox{background:#fffddfdd;border:1px solid #111;border-radius:9px;padding:8px 12px;min-width:105px}
+.hudbox small{display:block;font-size:9px;color:#666;letter-spacing:.08em}
+.hudbox b{font-size:17px}
+#status{margin-left:auto}
+.overlay{position:absolute;inset:0;background:#ffffffe8;display:flex;align-items:center;justify-content:center;text-align:center;z-index:20;padding:20px}
+.overlay-card{max-width:500px;background:#fff;border:2px solid #111;border-radius:16px;padding:28px;box-shadow:0 15px 40px #0002}
+.overlay h2{margin:0 0 10px;font-size:25px}
+.overlay p{color:#555;font-size:13px;line-height:1.55}
+button{border:0;background:#111;color:#fff;border-radius:9px;padding:12px 20px;font-weight:700;cursor:pointer}
+button:hover{transform:translateY(-1px)}
+.error{color:#b00020;font-size:12px;margin-top:10px}
+.controls{margin-top:15px;background:#f7f7f7;border:1px solid #ccc;border-radius:14px;padding:16px}
+.control-title{font-size:12px;font-weight:800;letter-spacing:.1em;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.control{background:#fff;border:1px solid #ddd;border-radius:10px;padding:11px}
+.control span{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:8px}
+.control input{width:100%;accent-color:#111}
+.control small{display:block;color:#777;font-size:9px;line-height:1.3;margin-top:4px}
+.reset{margin-top:12px;padding:7px 12px;font-size:10px}
+.stats{margin-top:15px;display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.panel{background:#fff;border:1px solid #ccc;border-radius:14px;padding:15px}
+.panel h3{margin:0 0 10px;font-size:12px;letter-spacing:.08em}
+#jumpLog{max-height:150px;overflow:auto;font-size:11px}
+.logrow{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:6px 0}
+@media(max-width:700px){.app{padding:12px}#game{height:430px}.grid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr}.hudbox{min-width:85px}.hudbox b{font-size:14px}}
+@media(max-width:450px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+<div class="app">
+<h1>SOUND GAME</h1>
+<div class="sub">Use your voice to fly the square through the moving obstacles.</div>
 
-<div id="permissionOverlay" style="
-  position:fixed; inset:0; z-index:9999;
-  background:#f4f1ea; display:flex; align-items:center; justify-content:center;
-  padding:24px; text-align:center;
-">
-  <div style="max-width:520px; width:100%;">
-    <div style="font-size:clamp(38px,8vw,72px); font-weight:900; letter-spacing:-.04em; margin-bottom:12px;">
-      SOUND JUMP
-    </div>
-    <p style="color:#555; line-height:1.6; margin:0 auto 24px;">
-      This game uses your microphone to detect how loud your voice is.
-      Allow microphone access to start playing.
-    </p>
-    <button id="enableMicBtn" style="
-      border:2px solid #171717; background:#171717; color:#fff;
-      padding:16px 28px; border-radius:10px; cursor:pointer;
-      font-size:16px; font-weight:800;
-    ">ENABLE MICROPHONE</button>
-    <div id="permissionError" style="
-      display:none; margin-top:18px; color:#9b1c1c; font-size:13px; line-height:1.5;
-    "></div>
-  </div>
+<div class="game-wrap">
+<div id="game">
+<canvas id="canvas"></canvas>
+
+<div class="hud">
+<div class="hudbox"><small>SCORE</small><b id="score">0</b></div>
+<div class="hudbox"><small>VOICE</small><b id="voice">0%</b></div>
+<div class="hudbox"><small>PITCH</small><b id="pitch">0 Hz</b></div>
+<div class="hudbox"><small>JUMP</small><b id="jump">0 px</b></div>
+<div class="hudbox" id="status"><small>STATUS</small><b id="statusText">READY</b></div>
 </div>
 
-<div class="app">
-  <div class="top">
-    <div>
-      <h1>SOUND JUMP</h1>
-      <p class="hint">Use your voice to make the square jump. Louder sound = higher jump.</p>
-    </div>
-    <div class="controls">
-      <button id="micBtn">START MICROPHONE</button>
-      <button id="resetBtn">RESET</button>
-    </div>
-  </div>
+<div class="overlay" id="overlay">
+<div class="overlay-card">
+<h2 id="overlayTitle">SOUND GAME</h2>
+<p id="overlayText">Allow microphone access, then control the square with your voice. Louder voice moves it upward; quiet voice lets it fall smoothly.</p>
+<button id="micBtn">ENABLE MICROPHONE</button>
+<div class="error" id="error"></div>
+</div>
+</div>
+</div>
 
-  <div class="game" id="game">
-    <div class="meter"><div class="meterFill" id="meterFill"></div></div>
-    <div class="readout" id="readout">Microphone off</div>
-    <div class="ground"></div>
-    <div class="box" id="box"></div>
-  </div>
+<div class="controls">
+<div class="control-title">SOUND CONTROLS</div>
+<div class="grid">
+<label class="control"><span>MIC SENSITIVITY <output id="sensOut">100%</output></span><input id="sens" type="range" min="25" max="250" value="100"><small>Higher makes quiet sounds stronger.</small></label>
+<label class="control"><span>SMOOTHING <output id="smoothOut">75%</output></span><input id="smooth" type="range" min="0" max="95" value="75"><small>Higher gives slower, more flowing movement.</small></label>
+<label class="control"><span>VOICE THRESHOLD <output id="threshOut">10%</output></span><input id="thresh" type="range" min="0" max="50" value="10"><small>Filters out background noise.</small></label>
+<label class="control"><span>JUMP POWER <output id="powerOut">100%</output></span><input id="power" type="range" min="50" max="180" value="100"><small>Controls how strongly voice lifts the square.</small></label>
+</div>
+<button class="reset" id="reset">RESET CONTROLS</button>
+</div>
 
-  <div class="status">
-    <div class="card">
-      <div class="label">Current Loudness</div>
-      <div class="value"><span id="loudness">0</span>%</div>
-    </div>
-    <div class="card">
-      <div class="label">Last Jump</div>
-      <div class="value"><span id="lastJump">0</span> px</div>
-    </div>
-    <div class="card">
-      <div class="label">Total Jumps</div>
-      <div class="value"><span id="jumpCount">0</span></div>
-    </div>
-  </div>
-
-  <div class="log" id="log">
-    <div class="logRow"><strong>#</strong><strong>Jump height</strong><strong>Voice level</strong></div>
-  </div>
-  <div class="permission" id="permission">
-    Microphone access is requested only after you press “START MICROPHONE”. Run this file on HTTPS or localhost if your browser blocks microphone access from a local file.
-  </div>
+<div class="stats">
+<div class="panel"><h3>JUMP RECORD</h3><div id="jumpLog">No jumps recorded yet.</div></div>
+<div class="panel"><h3>HOW TO PLAY</h3><div style="font-size:12px;color:#555;line-height:1.6">
+Speak louder to rise.<br>
+Speak softly to fall.<br>
+Avoid every rectangle wall.<br>
+The gap between walls is always large enough for the square.<br>
+Your jump heights are recorded automatically.
+</div></div>
+</div>
+</div>
 </div>
 
 <script>
-let audioContext = null;
-let analyser = null;
-let microphone = null;
-let data = null;
-let running = false;
-let animationId = null;
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+const game=document.getElementById('game');
+let W=900,H=520,dpr=1;
 
-let jumpCount = 0;
-let jumping = false;
-let jumpStart = 0;
-let jumpHeight = 0;
-let jumpDuration = 650;
-let currentY = 0;
-let peakReached = false;
-let silenceFrames = 0;
-let lastTrigger = 0;
-
-const box = document.getElementById("box");
-const micBtn = document.getElementById("micBtn");
-const resetBtn = document.getElementById("resetBtn");
-const loudnessEl = document.getElementById("loudness");
-const lastJumpEl = document.getElementById("lastJump");
-const jumpCountEl = document.getElementById("jumpCount");
-const meterFill = document.getElementById("meterFill");
-const readout = document.getElementById("readout");
-const log = document.getElementById("log");
-const permissionOverlay = document.getElementById("permissionOverlay");
-const enableMicBtn = document.getElementById("enableMicBtn");
-const permissionError = document.getElementById("permissionError");
-
-enableMicBtn.addEventListener("click", async () => {
-  permissionError.style.display = "none";
-  enableMicBtn.disabled = true;
-  enableMicBtn.textContent = "REQUESTING ACCESS...";
-
-  try {
-    await startMicrophone();
-
-    if (running) {
-      permissionOverlay.style.display = "none";
-    } else {
-      throw new Error("Microphone could not be started.");
-    }
-  } catch (err) {
-    enableMicBtn.disabled = false;
-    enableMicBtn.textContent = "TRY AGAIN";
-    permissionError.style.display = "block";
-    permissionError.textContent =
-      "Microphone access was not granted. Click TRY AGAIN and choose “Allow”. " +
-      "If you opened this HTML directly from your computer and Chrome still blocks it, " +
-      "run it through localhost.";
-  }
-});
-
-micBtn.addEventListener("click", startMicrophone);
-resetBtn.addEventListener("click", resetGame);
-
-
-
-async function startMicrophone() {
-  if (running) {
-    stopMicrophone();
-    return;
-  }
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: false
-      }
-    });
-
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    microphone = audioContext.createMediaStreamSource(stream);
-    analyser = audioContext.createAnalyser();
-    analyser.fftSize = 1024;
-    analyser.smoothingTimeConstant = 0.72;
-    data = new Uint8Array(analyser.fftSize);
-
-    microphone.connect(analyser);
-    running = true;
-    micBtn.textContent = "STOP MICROPHONE";
-    micBtn.classList.add("active");
-    readout.textContent = "Listening...";
-    document.getElementById("permission").textContent =
-      "Microphone active. Speak, clap, or make a sound. The height of every jump is recorded below.";
-
-    animate();
-  } catch (err) {
-    readout.textContent = "Microphone permission denied";
-    document.getElementById("permission").textContent =
-      "Could not access the microphone. Allow microphone permission and try again. If opening the HTML directly, use Chrome/Edge on localhost or HTTPS.";
-    console.error(err);
-    throw err;
-  }
+function resize(){
+ dpr=Math.min(devicePixelRatio||1,2);
+ const r=game.getBoundingClientRect();
+ W=r.width;H=r.height;
+ canvas.width=W*dpr;canvas.height=H*dpr;
+ canvas.style.width=W+'px';canvas.style.height=H+'px';
+ ctx.setTransform(dpr,0,0,dpr,0,0);
 }
+addEventListener('resize',resize); resize();
 
-function stopMicrophone() {
-  running = false;
-  if (animationId) cancelAnimationFrame(animationId);
-  if (microphone && microphone.mediaStream) {
-    microphone.mediaStream.getTracks().forEach(t => t.stop());
-  }
-  if (audioContext) audioContext.close();
-  audioContext = null;
-  analyser = null;
-  microphone = null;
-  data = null;
-  micBtn.textContent = "START MICROPHONE";
-  micBtn.classList.remove("active");
-  readout.textContent = "Microphone off";
-  meterFill.style.width = "0%";
-  loudnessEl.textContent = "0";
+const player={x:145,y:240,size:28,vy:0};
+let obstacles=[],running=false,gameOver=false,score=0;
+let last=performance.now(),spawnTimer=0,distance=0;
+let micStream=null,audioCtx=null,analyser=null,timeData=null,freqData=null;
+let voiceLevel=0,rawVoice=0,pitch=0;
+let jumpStartY=null,jumpPeakY=null,jumpActive=false,jumpRecords=[];
+let bgOffset=0;
+
+const settings={sensitivity:1,smoothing:.75,threshold:10,power:1};
+
+function setControl(id,key,out,divide=100){
+ const el=document.getElementById(id),o=document.getElementById(out);
+ const update=()=>{settings[key]=Number(el.value)/divide;o.textContent=el.value+'%';};
+ el.addEventListener('input',update);update();
 }
+setControl('sens','sensitivity','sensOut');
+setControl('smooth','smoothing','smoothOut');
+setControl('thresh','threshold','threshOut');
+setControl('power','power','powerOut');
 
-function getVoiceLevel() {
-  analyser.getByteTimeDomainData(data);
-
-  // RMS measures actual signal energy rather than relying on a single peak.
-  let sum = 0;
-  for (let i = 0; i < data.length; i++) {
-    const normalized = (data[i] - 128) / 128;
-    sum += normalized * normalized;
-  }
-  const rms = Math.sqrt(sum / data.length);
-
-  // Convert RMS into a more useful 0-100 game level.
-  let level = Math.max(0, Math.min(100, (rms / 0.32) * 100));
-  level = Math.pow(level / 100, 0.72) * 100;
-  return level;
-}
-
-function animate() {
-  if (!running) return;
-
-  const level = getVoiceLevel();
-  loudnessEl.textContent = Math.round(level);
-  meterFill.style.width = level + "%";
-
-  // A sound above this threshold starts a jump.
-  // The threshold prevents tiny background noise from creating jumps.
-  const trigger = 15;
-
-  if (!jumping && level > trigger && performance.now() - lastTrigger > 180) {
-    startJump(level);
-    lastTrigger = performance.now();
-  }
-
-  if (jumping) {
-    const elapsed = performance.now() - jumpStart;
-    const t = Math.min(1, elapsed / jumpDuration);
-
-    // Smooth parabolic arc: 0 -> peak -> 0.
-    const arc = 4 * t * (1 - t);
-    currentY = jumpHeight * arc;
-    box.style.transform = `translate(-50%, ${-currentY}px)`;
-
-    if (t >= 1) {
-      jumping = false;
-      currentY = 0;
-      box.style.transform = "translate(-50%, 0)";
-      readout.textContent = `Jump recorded: ${Math.round(jumpHeight)} px`;
-    }
-  } else {
-    if (level < 8) silenceFrames++;
-    else silenceFrames = 0;
-  }
-
-  animationId = requestAnimationFrame(animate);
-}
-
-function startJump(level) {
-  jumping = true;
-  peakReached = false;
-  jumpStart = performance.now();
-
-  // Map voice loudness to jump height.
-  // 15% sound -> small jump, 100% -> almost full game height.
-  jumpHeight = 35 + (Math.pow(level / 100, 0.82) * 360);
-  jumpHeight = Math.round(Math.min(400, jumpHeight));
-
-  jumpCount++;
-  jumpCountEl.textContent = jumpCount;
-  lastJumpEl.textContent = jumpHeight;
-  readout.textContent = `Jumping ${jumpHeight}px`;
-
-  const row = document.createElement("div");
-  row.className = "logRow";
-  row.innerHTML = `
-    <span>${jumpCount}</span>
-    <span>${jumpHeight} px</span>
-    <span>${Math.round(level)}%</span>
-  `;
-  log.appendChild(row);
-  log.scrollTop = log.scrollHeight;
-}
-
-function resetGame() {
-  jumpCount = 0;
-  jumping = false;
-  jumpHeight = 0;
-  lastJumpEl.textContent = "0";
-  jumpCountEl.textContent = "0";
-  box.style.transform = "translate(-50%, 0)";
-  readout.textContent = running ? "Listening..." : "Microphone off";
-  log.innerHTML = '<div class="logRow"><strong>#</strong><strong>Jump height</strong><strong>Voice level</strong></div>';
-}
-
-window.addEventListener("beforeunload", stopMicrophone);
-
-// User sound controls
-(() => {
-  const sensitivity = document.getElementById('sensitivity');
-  const smoothing = document.getElementById('smoothing');
-  const threshold = document.getElementById('threshold');
-  const jumpHeight = document.getElementById('jumpHeight');
-  const sensitivityValue = document.getElementById('sensitivityValue');
-  const smoothingValue = document.getElementById('smoothingValue');
-  const thresholdValue = document.getElementById('thresholdValue');
-  const jumpHeightValue = document.getElementById('jumpHeightValue');
-  const reset = document.getElementById('resetControls');
-
-  const defaults = { sensitivity:100, smoothing:70, threshold:15, jumpHeight:100 };
-
-  function updateLabels() {
-    sensitivityValue.textContent = sensitivity.value + '%';
-    smoothingValue.textContent = smoothing.value + '%';
-    thresholdValue.textContent = threshold.value + '%';
-    jumpHeightValue.textContent = jumpHeight.value + '%';
-
-    // Expose settings globally so the game loop can use them.
-    window.soundGameSettings = {
-      sensitivity: Number(sensitivity.value) / 100,
-      smoothing: Number(smoothing.value) / 100,
-      threshold: Number(threshold.value),
-      jumpHeight: Number(jumpHeight.value) / 100
-    };
-  }
-
-  [sensitivity, smoothing, threshold, jumpHeight].forEach(el => {
-    el.addEventListener('input', updateLabels);
-  });
-
-  reset.addEventListener('click', () => {
-    sensitivity.value = defaults.sensitivity;
-    smoothing.value = defaults.smoothing;
-    threshold.value = defaults.threshold;
-    jumpHeight.value = defaults.jumpHeight;
-    updateLabels();
-  });
-
-  updateLabels();
-})();
-
-
-// Smooth sound-control helpers for the game physics.
-window.getSoundGameControl = function(level) {
-  const s = window.soundGameSettings || { sensitivity:1, smoothing:.7, threshold:15, jumpHeight:1 };
-  let v = Math.max(0, Math.min(100, level * s.sensitivity));
-  if (v < s.threshold) v = 0;
-  return Math.max(0, Math.min(1, v / 100));
+document.getElementById('reset').onclick=()=>{
+ document.getElementById('sens').value=100;
+ document.getElementById('smooth').value=75;
+ document.getElementById('thresh').value=10;
+ document.getElementById('power').value=100;
+ ['sens','smooth','thresh','power'].forEach(x=>document.getElementById(x).dispatchEvent(new Event('input')));
 };
 
+function levelFromMic(){
+ if(!analyser)return;
+ analyser.getByteTimeDomainData(timeData);
+ let sum=0;
+ for(let i=0;i<timeData.length;i++){let v=(timeData[i]-128)/128;sum+=v*v}
+ const rms=Math.sqrt(sum/timeData.length);
+ let l=Math.min(100,(rms/.28)*100)*settings.sensitivity;
+ l=Math.min(100,l);
+ if(l<settings.threshold)l=0;
+ rawVoice=l;
+ const smoothing=.05+(settings.smoothing*.32);
+ voiceLevel += (l-voiceLevel)*smoothing;
+
+ analyser.getByteFrequencyData(freqData);
+ let weighted=0,total=0;
+ for(let i=1;i<freqData.length;i++){weighted+=i*freqData[i];total+=freqData[i]}
+ pitch=total?(weighted/total)*(audioCtx.sampleRate/analyser.fftSize):0;
+}
+
+async function enableMic(){
+ const err=document.getElementById('error');
+ err.textContent='';
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+   err.textContent='Microphone access is not supported by this browser.';
+   return false;
+ }
+ try{
+   micStream=await navigator.mediaDevices.getUserMedia({
+     audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false}
+   });
+   audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+   const source=audioCtx.createMediaStreamSource(micStream);
+   analyser=audioCtx.createAnalyser();
+   analyser.fftSize=1024;
+   analyser.smoothingTimeConstant=.55;
+   source.connect(analyser);
+   timeData=new Uint8Array(analyser.fftSize);
+   freqData=new Uint8Array(analyser.frequencyBinCount);
+   startGame();
+   return true;
+ }catch(e){
+   let msg='Microphone permission was not granted.';
+   if(e.name==='NotAllowedError')msg='Microphone permission was denied. Click TRY AGAIN and allow microphone access.';
+   else if(e.name==='NotFoundError')msg='No microphone was found.';
+   else if(e.name==='SecurityError')msg='Microphone access is blocked by browser security. Use localhost or HTTPS.';
+   err.textContent=msg;
+   document.getElementById('micBtn').textContent='TRY AGAIN';
+   return false;
+ }
+}
+
+document.getElementById('micBtn').onclick=enableMic;
+
+function startGame(){
+ document.getElementById('overlay').style.display='none';
+ running=true;gameOver=false;score=0;distance=0;spawnTimer=0;
+ obstacles=[];jumpRecords=[];player.y=H*.48;player.vy=0;
+ document.getElementById('jumpLog').textContent='No jumps recorded yet.';
+ document.getElementById('statusText').textContent='PLAYING';
+ for(let i=0;i<4;i++)spawnObstacle(W+120+i*270);
+}
+
+function spawnObstacle(x=W+80){
+ const minGap=145,maxGap=205;
+ const gap=minGap+Math.random()*(maxGap-minGap);
+ const gapY=80+Math.random()*(H-160-gap);
+ const topH=gapY;
+ const bottomY=gapY+gap;
+ obstacles.push({x,topH,bottomY,gap,w:45,passed:false});
+}
+
+function recordJump(){
+ if(jumpStartY===null||jumpPeakY===null)return;
+ const h=Math.max(0,jumpStartY-jumpPeakY);
+ if(h<5)return;
+ jumpRecords.push({n:jumpRecords.length+1,h:Math.round(h),voice:Math.round(rawVoice)});
+ if(jumpRecords.length>20)jumpRecords.shift();
+ const log=document.getElementById('jumpLog');
+ log.innerHTML=jumpRecords.slice().reverse().map(j=>`<div class="logrow"><span>Jump ${j.n}</span><b>${j.h} px</b><span>${j.voice}% voice</span></div>`).join('');
+ document.getElementById('jump').textContent=Math.round(h)+' px';
+ jumpStartY=null;jumpPeakY=null;jumpActive=false;
+}
+
+function collision(){
+ const px=player.x,py=player.y,s=player.size;
+ for(const o of obstacles){
+   if(px+s>o.x&&px<o.x+o.w){
+     if(py<o.topH || py+s>o.bottomY)return true;
+   }
+ }
+ return py<0||py+s>H;
+}
+
+function update(dt){
+ levelFromMic();
+
+ // Voice controls target vertical movement. Pitch adds a small responsive boost.
+ const pitchBoost=Math.max(0,Math.min(1,(pitch-100)/700));
+ const voice=Math.max(0,voiceLevel/100);
+ let targetVy=(-260*voice*settings.power) - pitchBoost*70;
+ // Smoothly approach target velocity instead of dropping immediately.
+ player.vy += (targetVy-player.vy)*(1-Math.pow(.001,dt*(.7+settings.smoothing*3)));
+ player.vy += 115*dt; // gravity
+ player.y += player.vy*dt;
+
+ // Record a voice-driven ascent and its peak.
+ if(voice>0.12 && !jumpActive){
+   jumpActive=true;jumpStartY=player.y;jumpPeakY=player.y;
+ }
+ if(jumpActive){
+   jumpPeakY=Math.min(jumpPeakY,player.y);
+   if(voice<0.08 && player.vy>20)recordJump();
+ }
+
+ const speed=230+Math.min(150,score*.45);
+ distance+=speed*dt;
+ bgOffset=(bgOffset+speed*dt)%80;
+ spawnTimer+=dt;
+ if(spawnTimer>1.65){spawnTimer=0;spawnObstacle();}
+
+ for(const o of obstacles){
+   o.x-=speed*dt;
+   if(!o.passed&&o.x+o.w<player.x){
+     o.passed=true;score+=10;
+   }
+ }
+ obstacles=obstacles.filter(o=>o.x+o.w>-20);
+ if(collision())endGame();
+
+ document.getElementById('score').textContent=score;
+ document.getElementById('voice').textContent=Math.round(voiceLevel)+'%';
+ document.getElementById('pitch').textContent=pitch?Math.round(pitch)+' Hz':'0 Hz';
+}
+
+function drawBackground(){
+ ctx.fillStyle='#dedede';ctx.fillRect(0,0,W,H);
+ ctx.strokeStyle='#c7c7c7';ctx.lineWidth=1;
+ for(let x=-bgOffset;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+ for(let y=40;y<H;y+=55){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+ // speed streaks
+ ctx.strokeStyle='#b5b5b5';
+ for(let i=0;i<12;i++){
+   const y=(i*47+65)%H,x=(i*137-bgOffset*1.5)%W;
+   ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+35,y);ctx.stroke();
+ }
+}
+
+function draw(){
+ drawBackground();
+ // obstacles
+ for(const o of obstacles){
+   ctx.fillStyle='#111';
+   ctx.fillRect(o.x,0,o.w,o.topH);
+   ctx.fillRect(o.x,o.bottomY,o.w,H-o.bottomY);
+   // little edge marks
+   ctx.fillStyle='#444';
+   ctx.fillRect(o.x+7,o.topH-7,o.w-14,7);
+   ctx.fillRect(o.x+7,o.bottomY,o.w-14,7);
+ }
+ // player
+ ctx.fillStyle='#fff';
+ ctx.fillRect(player.x,player.y,player.size,player.size);
+ ctx.strokeStyle='#111';ctx.lineWidth=3;ctx.strokeRect(player.x,player.y,player.size,player.size);
+ // voice indicator
+ ctx.fillStyle='#111';
+ ctx.font='10px Arial';
+ ctx.fillText('LOUDER ↑',player.x-4,player.y-8);
+}
+
+function endGame(){
+ if(!running)return;
+ running=false;gameOver=true;
+ if(jumpActive)recordJump();
+ document.getElementById('statusText').textContent='GAME OVER';
+ document.getElementById('overlay').style.display='flex';
+ document.getElementById('overlayTitle').textContent='GAME OVER';
+ document.getElementById('overlayText').innerHTML=`Your score: <b>${score}</b><br>${jumpRecords.length} jumps recorded.<br><br>Press the button to play again.`;
+ document.getElementById('micBtn').textContent='PLAY AGAIN';
+ document.getElementById('error').textContent='';
+}
+
+let prev=performance.now();
+function loop(now){
+ const dt=Math.min(.035,(now-prev)/1000);prev=now;
+ if(running)update(dt);
+ draw();
+ requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
 </script>
-
-<section class="controls" id="soundControls">
-  <div class="control-header">
-    <div>
-      <div class="control-title">SOUND CONTROLS</div>
-      <div class="control-subtitle">Adjust how strongly your microphone controls the player.</div>
-    </div>
-    <button id="resetControls" class="small-btn" type="button">RESET</button>
-  </div>
-
-  <div class="control-grid">
-    <label class="control">
-      <span><b>MIC SENSITIVITY</b><output id="sensitivityValue">100%</output></span>
-      <input id="sensitivity" type="range" min="20" max="200" value="100" step="1">
-      <small>Higher = quieter sounds move the square more.</small>
-    </label>
-
-    <label class="control">
-      <span><b>VOICE SMOOTHING</b><output id="smoothingValue">70%</output></span>
-      <input id="smoothing" type="range" min="0" max="95" value="70" step="1">
-      <small>Higher = smoother, slower changes in movement.</small>
-    </label>
-
-    <label class="control">
-      <span><b>MINIMUM VOICE</b><output id="thresholdValue">15%</output></span>
-      <input id="threshold" type="range" min="0" max="50" value="15" step="1">
-      <small>Ignore very quiet background noise below this level.</small>
-    </label>
-
-    <label class="control">
-      <span><b>MAX JUMP HEIGHT</b><output id="jumpHeightValue">100%</output></span>
-      <input id="jumpHeight" type="range" min="50" max="150" value="100" step="1">
-      <small>Controls the maximum height reached by loud sounds.</small>
-    </label>
-  </div>
-</section>
-
 </body>
 </html>
