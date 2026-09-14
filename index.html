@@ -137,6 +137,60 @@
     .status { grid-template-columns: 1fr 1fr 1fr; }
     .value { font-size: 18px; }
   }
+
+/* Sound control panel */
+.controls {
+  width: min(100%, 900px);
+  margin: 18px auto 0;
+  padding: 18px;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 16px;
+  background: rgba(255,255,255,.82);
+  box-sizing: border-box;
+}
+.control-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+}
+.control-title { font-weight:800; letter-spacing:.08em; }
+.control-subtitle { font-size:12px; opacity:.62; margin-top:4px; }
+.control-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.control {
+  display:block;
+  padding:13px;
+  border-radius:12px;
+  background:rgba(0,0,0,.045);
+}
+.control span {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px;
+  margin-bottom:8px;
+}
+.control output { font-variant-numeric:tabular-nums; opacity:.7; }
+.control input { width:100%; accent-color:#111; }
+.control small { display:block; font-size:10px; line-height:1.4; opacity:.58; margin-top:5px; }
+.small-btn {
+  border:0;
+  background:#111;
+  color:#fff;
+  border-radius:9px;
+  padding:8px 12px;
+  font-size:11px;
+  cursor:pointer;
+}
+@media (max-width:650px) {
+  .control-grid { grid-template-columns:1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -419,6 +473,97 @@ function resetGame() {
 }
 
 window.addEventListener("beforeunload", stopMicrophone);
+
+// User sound controls
+(() => {
+  const sensitivity = document.getElementById('sensitivity');
+  const smoothing = document.getElementById('smoothing');
+  const threshold = document.getElementById('threshold');
+  const jumpHeight = document.getElementById('jumpHeight');
+  const sensitivityValue = document.getElementById('sensitivityValue');
+  const smoothingValue = document.getElementById('smoothingValue');
+  const thresholdValue = document.getElementById('thresholdValue');
+  const jumpHeightValue = document.getElementById('jumpHeightValue');
+  const reset = document.getElementById('resetControls');
+
+  const defaults = { sensitivity:100, smoothing:70, threshold:15, jumpHeight:100 };
+
+  function updateLabels() {
+    sensitivityValue.textContent = sensitivity.value + '%';
+    smoothingValue.textContent = smoothing.value + '%';
+    thresholdValue.textContent = threshold.value + '%';
+    jumpHeightValue.textContent = jumpHeight.value + '%';
+
+    // Expose settings globally so the game loop can use them.
+    window.soundGameSettings = {
+      sensitivity: Number(sensitivity.value) / 100,
+      smoothing: Number(smoothing.value) / 100,
+      threshold: Number(threshold.value),
+      jumpHeight: Number(jumpHeight.value) / 100
+    };
+  }
+
+  [sensitivity, smoothing, threshold, jumpHeight].forEach(el => {
+    el.addEventListener('input', updateLabels);
+  });
+
+  reset.addEventListener('click', () => {
+    sensitivity.value = defaults.sensitivity;
+    smoothing.value = defaults.smoothing;
+    threshold.value = defaults.threshold;
+    jumpHeight.value = defaults.jumpHeight;
+    updateLabels();
+  });
+
+  updateLabels();
+})();
+
+
+// Smooth sound-control helpers for the game physics.
+window.getSoundGameControl = function(level) {
+  const s = window.soundGameSettings || { sensitivity:1, smoothing:.7, threshold:15, jumpHeight:1 };
+  let v = Math.max(0, Math.min(100, level * s.sensitivity));
+  if (v < s.threshold) v = 0;
+  return Math.max(0, Math.min(1, v / 100));
+};
+
 </script>
+
+<section class="controls" id="soundControls">
+  <div class="control-header">
+    <div>
+      <div class="control-title">SOUND CONTROLS</div>
+      <div class="control-subtitle">Adjust how strongly your microphone controls the player.</div>
+    </div>
+    <button id="resetControls" class="small-btn" type="button">RESET</button>
+  </div>
+
+  <div class="control-grid">
+    <label class="control">
+      <span><b>MIC SENSITIVITY</b><output id="sensitivityValue">100%</output></span>
+      <input id="sensitivity" type="range" min="20" max="200" value="100" step="1">
+      <small>Higher = quieter sounds move the square more.</small>
+    </label>
+
+    <label class="control">
+      <span><b>VOICE SMOOTHING</b><output id="smoothingValue">70%</output></span>
+      <input id="smoothing" type="range" min="0" max="95" value="70" step="1">
+      <small>Higher = smoother, slower changes in movement.</small>
+    </label>
+
+    <label class="control">
+      <span><b>MINIMUM VOICE</b><output id="thresholdValue">15%</output></span>
+      <input id="threshold" type="range" min="0" max="50" value="15" step="1">
+      <small>Ignore very quiet background noise below this level.</small>
+    </label>
+
+    <label class="control">
+      <span><b>MAX JUMP HEIGHT</b><output id="jumpHeightValue">100%</output></span>
+      <input id="jumpHeight" type="range" min="50" max="150" value="100" step="1">
+      <small>Controls the maximum height reached by loud sounds.</small>
+    </label>
+  </div>
+</section>
+
 </body>
 </html>
