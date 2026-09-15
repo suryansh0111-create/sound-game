@@ -62,7 +62,7 @@ button:hover{transform:translateY(-1px)}
 <div class="overlay" id="overlay">
 <div class="overlay-card">
 <h2 id="overlayTitle">SOUND GAME</h2>
-<p id="overlayText">Allow microphone access, then control the square with your voice. Louder voice moves it upward; quiet voice lets it fall smoothly.</p>
+<p id="overlayText">Allow microphone access, then control the square with your voice. Only a genuinely loud voice lifts the square; background noise should not move it.</p>
 <button id="micBtn">ENABLE MICROPHONE</button>
 <div class="error" id="error"></div>
 </div>
@@ -72,9 +72,9 @@ button:hover{transform:translateY(-1px)}
 <div class="controls">
 <div class="control-title">SOUND CONTROLS</div>
 <div class="grid">
-<label class="control"><span>MIC SENSITIVITY <output id="sensOut">100%</output></span><input id="sens" type="range" min="25" max="250" value="100"><small>Higher makes quiet sounds stronger.</small></label>
+<label class="control"><span>MIC SENSITIVITY <output id="sensOut">100%</output></span><input id="sens" type="range" min="25" max="140" value="65"><small>Keep low to reject background noise.</small></label>
 <label class="control"><span>SMOOTHING <output id="smoothOut">75%</output></span><input id="smooth" type="range" min="0" max="95" value="75"><small>Higher gives slower, more flowing movement.</small></label>
-<label class="control"><span>VOICE THRESHOLD <output id="threshOut">10%</output></span><input id="thresh" type="range" min="0" max="50" value="10"><small>Filters out background noise.</small></label>
+<label class="control"><span>VOICE THRESHOLD <output id="threshOut">10%</output></span><input id="thresh" type="range" min="5" max="70" value="32"><small>Higher = more voice required to lift the box.</small></label>
 <label class="control"><span>JUMP POWER <output id="powerOut">100%</output></span><input id="power" type="range" min="50" max="180" value="100"><small>Controls how strongly voice lifts the square.</small></label>
 </div>
 <button class="reset" id="reset">RESET CONTROLS</button>
@@ -117,7 +117,7 @@ let voiceLevel=0,rawVoice=0,pitch=0;
 let jumpStartY=null,jumpPeakY=null,jumpActive=false,jumpRecords=[];
 let bgOffset=0;
 
-const settings={sensitivity:1,smoothing:.75,threshold:10,power:1};
+const settings={sensitivity:.65,smoothing:.75,threshold:32,power:1};
 
 function setControl(id,key,out,divide=100){
  const el=document.getElementById(id),o=document.getElementById(out);
@@ -130,9 +130,9 @@ setControl('thresh','threshold','threshOut');
 setControl('power','power','powerOut');
 
 document.getElementById('reset').onclick=()=>{
- document.getElementById('sens').value=100;
+ document.getElementById('sens').value=65;
  document.getElementById('smooth').value=75;
- document.getElementById('thresh').value=10;
+ document.getElementById('thresh').value=32;
  document.getElementById('power').value=100;
  ['sens','smooth','thresh','power'].forEach(x=>document.getElementById(x).dispatchEvent(new Event('input')));
 };
@@ -140,19 +140,34 @@ document.getElementById('reset').onclick=()=>{
 function levelFromMic(){
  if(!analyser)return;
  analyser.getByteTimeDomainData(timeData);
- let sum=0;
- for(let i=0;i<timeData.length;i++){let v=(timeData[i]-128)/128;sum+=v*v}
+
+ let sum=0, peak=0;
+ for(let i=0;i<timeData.length;i++){
+   const v=(timeData[i]-128)/128;
+   sum+=v*v;
+   peak=Math.max(peak,Math.abs(v));
+ }
  const rms=Math.sqrt(sum/timeData.length);
- let l=Math.min(100,(rms/.28)*100)*settings.sensitivity;
- l=Math.min(100,l);
- if(l<settings.threshold)l=0;
+
+ // Strong noise gate: low room/background noise is ignored.
+ const noiseFloor=0.035;
+ const gatedRms=Math.max(0,rms-noiseFloor);
+ let l=Math.min(100,(gatedRms/.24)*100)*settings.sensitivity;
+
+ // Require a genuinely strong signal before lifting the player.
+ if(l<settings.threshold || peak<0.10 || rms<0.045) l=0;
  rawVoice=l;
- const smoothing=.05+(settings.smoothing*.32);
+
+ // Smooth the microphone signal so short noise spikes do not cause jumps.
+ const smoothing=.025+(settings.smoothing*.16);
  voiceLevel += (l-voiceLevel)*smoothing;
 
  analyser.getByteFrequencyData(freqData);
  let weighted=0,total=0;
- for(let i=1;i<freqData.length;i++){weighted+=i*freqData[i];total+=freqData[i]}
+ for(let i=1;i<freqData.length;i++){
+   weighted+=i*freqData[i];
+   total+=freqData[i];
+ }
  pitch=total?(weighted/total)*(audioCtx.sampleRate/analyser.fftSize):0;
 }
 
@@ -236,19 +251,22 @@ function update(dt){
  // Voice controls target vertical movement. Pitch adds a small responsive boost.
  const pitchBoost=Math.max(0,Math.min(1,(pitch-100)/700));
  const voice=Math.max(0,voiceLevel/100);
- let targetVy=(-260*voice*settings.power) - pitchBoost*70;
+// Dead zone + nonlinear response: quiet/background sounds produce no lift.
+const strongVoice=Math.max(0,Math.min(1,(voice-0.32)/0.68));
+const voiceForce=Math.pow(strongVoice,1.7);
+let targetVy=(-330*voiceForce*settings.power) - (voiceForce*pitchBoost*45);
  // Smoothly approach target velocity instead of dropping immediately.
  player.vy += (targetVy-player.vy)*(1-Math.pow(.001,dt*(.7+settings.smoothing*3)));
- player.vy += 115*dt; // gravity
+ player.vy += 145*dt; // gravity keeps the player down unless the voice is loud
  player.y += player.vy*dt;
 
  // Record a voice-driven ascent and its peak.
- if(voice>0.12 && !jumpActive){
+ if(voice>0.42 && !jumpActive){
    jumpActive=true;jumpStartY=player.y;jumpPeakY=player.y;
  }
  if(jumpActive){
    jumpPeakY=Math.min(jumpPeakY,player.y);
-   if(voice<0.08 && player.vy>20)recordJump();
+   if(voice<0.28 && player.vy>20)recordJump();
  }
 
  const speed=230+Math.min(150,score*.45);
